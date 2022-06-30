@@ -1,12 +1,24 @@
 const collegeModel = require("../models/collegeModel");
 const internModel = require("../models/internModel");
 
+function validURL(myURL) {
+    let regex = (/^(https:\/\/|http:\/\/)[a-zA-Z!_$]+\-[a-zA-Z]+\.[a-zA-Z3]+\.[a-z]+\-[a-z]+\-[1]+\.[a-z]+\.[com]+\/[radon]+\/[a-zA-Z]+\.(jpeg|jpg|png|gif|webp)$/)
+    return regex.test(myURL)
+ }
+function trimall(alltrim){
+    return alltrim.trim()
+}
+
+
 
 let createCollege = async function (req, res) {
     try{
         
     let bodyData = req.body
     let { name, fullName, logoLink } = bodyData
+trimall(name);
+
+trimall(fullName);
 
     let checkname = await collegeModel.findOne({name:name})
     if (Object.keys(bodyData).length === 0) {
@@ -27,12 +39,14 @@ if(!fullName){
 if(!logoLink){
     return res.status(400).send({ status: false, msg: "college logoLink is missing" })
 }
+if(!validURL(logoLink)){
+    return res.status(400).send({status:false, msg:"url not valid"})
+}
 
-const logoLinkValidator = (/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g).test(logoLink)
-            if (!logoLinkValidator) {
-                return res.status(400).send({ status: false, message: "Please enter a valid logo link " })
-            }
+<<<<<<< HEAD
+=======
 
+>>>>>>> 0def639449f32502f1ed4ec9d116b537fad4daba
 let collegecreate = await collegeModel.create(bodyData)
 
     res.status(201).send({ status: true, data:collegecreate})
@@ -69,3 +83,6 @@ catch(error){
 
 module.exports.createCollege = createCollege
 module.exports.collegedetail = collegedetail
+
+
+        
