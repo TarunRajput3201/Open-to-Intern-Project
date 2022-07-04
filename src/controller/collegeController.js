@@ -12,16 +12,16 @@ let createCollege = async function (req, res) {
         
     let bodyData = req.body
     let { name, fullName, logoLink } = bodyData
-
-
-    let checkname = await collegeModel.findOne({name:name})
     if (Object.keys(bodyData).length === 0) {
         return res.status(400).send({ status: false, message: "please provide data" })
     }
+
+    let checkname = await collegeModel.findOne({name:name})
+    
 if(!name){
     return res.status(400).send({ status: false, message: "college name is missing" })
 }
-if(!/^([a-zA-z ]){1,100}$/.test(name)){
+if(!/^([a-zA-Z ]){1,100}$/.test(name)){
     return res.status(400).send({ status: false, message: "college name should not be a number or symbol" })
 }
 if(checkname){
@@ -38,6 +38,7 @@ if(!validURL(logoLink)){
 }
 
 let collegecreate = await collegeModel.create(bodyData)
+// let newCollegeCreate
 let responseCollegeData= await collegeModel.findOne(bodyData,{_id:0,__v:0}) 
     res.status(201).send({ status: true, data:responseCollegeData})
 }
@@ -49,22 +50,22 @@ catch(error){
 
 const collegedetail = async function (req, res) {
 
-try{let data1 = req.query.name
-if(!data1){
+try{let collegeName = req.query.collegeName
+if(!collegeName){
     return res.status(400).send({status:false,message:"please provide college name"})
 }
-let checkname = await collegeModel.find({name:data1})
+let checkname = await collegeModel.find({name:collegeName})
 if(checkname.length==0){
     return res.status(400).send({status:false,message:"please provide valid college name"})
 }
-let college = await collegeModel.findOne({name:data1 , isDeleted:false},{updatedAt:0,createdAt:0,isDeleted:0,__v:0}).lean()
+let college = await collegeModel.findOne({name:collegeName , isDeleted:false},{updatedAt:0,createdAt:0,isDeleted:0,__v:0}).lean()
 let collegeId=college._id
 let interns=await internModel.find({collegeId:collegeId},{_id:1,updatedAt:0,createdAt:0,isDeleted:0,__v:0,collegeId:0}).lean()
 
 college.interns=interns
 if(interns.length==0){return res.status(404).send({status:false , message: "there is no intern from this college"})}
 delete college._id
-res.status(200).send({data:college}) }
+res.status(200).send({status:true, data:college}) }
 catch(error){
     res.status(500).send({status:false,message:error.message})
 }
