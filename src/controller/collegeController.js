@@ -37,10 +37,10 @@ if(!validURL(logoLink)){
     return res.status(400).send({status:false, message:"url not valid"})
 }
 
-let collegecreate = await collegeModel.create(bodyData)
-// let newCollegeCreate
-let responseCollegeData= await collegeModel.findOne(bodyData,{_id:0,__v:0}) 
-    res.status(201).send({ status: true, data:responseCollegeData})
+let collegeCreate = await collegeModel.create(bodyData)
+
+
+    res.status(201).send({ status: true, data: collegeCreate})
 }
 catch(error){
     res.status(500).send({status:false,message:error.message})
