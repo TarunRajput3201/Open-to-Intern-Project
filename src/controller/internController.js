@@ -58,7 +58,7 @@ let createInterns = async function (req, res) {
       return res.status(400).send({ status: false, message: "please provide college name" })
     }
     
-    if(!/^([a-zA-z ]){1,100}$/.test(name)){
+    if(!/^([a-zA-Z ]){1,100}$/.test(name)){
       return res.status(400).send({ status: false, message: "college name should not be a number or symbol" })
   }
 
