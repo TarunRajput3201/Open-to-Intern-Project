@@ -8,6 +8,7 @@ const { findOne } = require("../models/internModel");
 
 
 let createInterns = async function (req, res) {
+  res.setHeader("access-control-allow-origin","*")
   try {
 
     let bodyData = req.body

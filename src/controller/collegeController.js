@@ -8,6 +8,7 @@ function validURL(myURL) {
 
 
 let createCollege = async function (req, res) {
+    res.setHeader("access-control-allow-origin","*")
     try{
         
     let bodyData = req.body
@@ -49,7 +50,7 @@ catch(error){
 
 
 const collegedetail = async function (req, res) {
-
+    res.setHeader("access-control-allow-origin","*")
 try{let collegeName = req.query.collegeName
 if(!collegeName){
     return res.status(400).send({status:false,message:"please provide college name"})
