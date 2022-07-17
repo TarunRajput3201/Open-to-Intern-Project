@@ -1,84 +1,95 @@
-const { find } = require("../models/internModel");
+
 const internModel = require("../models/internModel");
 const collegeModel = require("../models/collegeModel")
-const mongoose =  require("mongoose")
-const isValid = function (value) {
-  if (typeof value === "undefined" || value === null) return false
-  if (typeof value === String && value.trim().length === 0) return false
-  return true;
-}
+const mongoose = require("mongoose");
+const { findOne } = require("../models/internModel");
+
 
 
 
 let createInterns = async function (req, res) {
-  try{
+  try {
 
     let bodyData = req.body
-     
-     let name=bodyData.name
-     let email=bodyData.email
-    let { mobile, collegeId } = bodyData
-    
-   
+    let {name,email, mobile, collegeName } = bodyData
+
+
     if (Object.keys(bodyData).length === 0) {
-      return res.status(400).send({ status: false, msg: "please provide data" })
+      return res.status(400).send({ status: false, message: "please provide data" })
     }
-
-
     
-  
-    
-    let checkemail = await internModel.findOne({ email: email })
-    let checkmobile = await internModel.findOne({ mobile: mobile })
-    let checkCollegeId = await collegeModel.findOne({_id:collegeId})
    
+    
+    if (!name) {
+      return res.status(400).send({ status: false, message: "name is missing " })
+    }
     
     if (!/^([A-Za-z ]){1,100}$/.test(name)) {
-      return res.status(400).send({ status: false, msg: "please enter valid name" })
+      return res.status(400).send({ status: false, message: "please enter valid name" })
+    }
+
+    let checkemail = await internModel.findOne({ email: email })
+
+    if (!email) {
+      return res.status(400).send({ status: false, message: "email is required" })
+    }
+    if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(email)) {
+      return res.status(400).send({ status: false, message: "write a valid email id" })
     }
     if (checkemail) {
-      return res.status(400).send({ status: false, msg: "email is already exist enter a unique email id" })
+      return res.status(400).send({ status: false, message: "email is already exist enter a unique email id" })
     }
 
-    if (!email || email.trim()==undefined) {
-      return res.status(400).send({ status: false, msg: "email is required" })
+    let checkmobile = await internModel.findOne({ mobile: mobile })
+    if (!mobile) {
+      return res.status(400).send({ status: false, message: "mobile number is missing" })
     }
-    if(!name.trim()|| !email.trim() ){
-      return res.status(400).send({status:false,msg:"please dont give space " })}
-    if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/).test(email)) {
-      return res.status(400).send({ status: false, msg: "write a valid email id" })
-    }
-     if(!mobile){
-      return res.status(400).send({ status: false, msg: "mobile number is missing" })
-     }
-    if (checkmobile)
-      return res.status(400).send({ status: false, msg: "mobile number is already exist enter a unique mobile number" })
     if (!/^([0-9]){10}$/.test(mobile)) {
-      return res.status(400).send({ status: false, msg: " please provide valid mobile number" })
+      return res.status(400).send({ status: false, message: " please provide valid mobile number" })
     }
-    if (!collegeId) {
-      return res.status(400).send({ status: false, msg: "please provide college id" })
-    }
-    if(!mongoose.isValidObjectId(collegeId)){ return res.status(400).send({status:false, msg: "invalid college id"})}
-    if (!checkCollegeId) {
-      return res.status(400).send({ status: false, msg: "college id doesnot exists" })
+    if (checkmobile){
+      return res.status(400).send({ status: false, message: "mobile number is already exist enter a unique mobile number" })
     }
 
-    let data = await internModel.create(bodyData)
+   
+    let checkCollegeName = await collegeModel.findOne({ name: collegeName })
+    
+    if (!collegeName) {
+      return res.status(400).send({ status: false, message: "please provide college name" })
+    }
+    
+    if(!/^([a-zA-Z ]){1,100}$/.test(name)){
+      return res.status(400).send({ status: false, message: "college name should not be a number or symbol" })
+  }
 
-    return res.status(201).send({ status: true, data: data })
-  
+    if (!checkCollegeName) {
+      return res.status(400).send({ status: false, message: "college name doesnot exists" })
+    }
+    let collegeData= await collegeModel.findOne({name:collegeName})
+    let collegeId=collegeData._id
+    let data={}
+    data.name=name
+    data.email=email
+    data.mobile=mobile
+    data.collegeId=collegeId
+   
+    let internData= await internModel.create(data)
+    
+    return res.status(201).send({ status: true, data: internData})
+    
+
+  }
+  catch (error) {
+    res.status(500).send({ status: false, message: error.message })
+  }
 }
-catch(error){
-  res.status(500).send({status:false,msg:error.message})
-}
-}
+
+
+
+
+
 
 
 
 
 module.exports.createInterns = createInterns
-<<<<<<< HEAD
-=======
-
->>>>>>> 0def639449f32502f1ed4ec9d116b537fad4daba
